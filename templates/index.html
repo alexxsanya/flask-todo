@@ -2,13 +2,19 @@
 <html>
     <head>
         <title></title>
+        <style>
+            .hidden {
+                display: none;
+            }
+        </style>
     </head>
     <body>
-        <form id="form" action="/todo/create" method="POST">
-            <input type="text" name="description"/>
+        <form id="form">
+            <input type="text" id='description' name="description"/>
             <input type="submit" value="Create"/>
         </form>
-        <ul>
+        <div id="error" class="hidden"> Something wrong happened</div>
+        <ul id='todos'>
             {% for d in data %}
             <li>{{ d.description }}</li>
             {% endfor %}
@@ -17,6 +23,28 @@
     <script>
         document.getElementById('form').onsubmit = function(e) {
             e.preventDefault()
+            fetch('/todo/create', {
+                method: 'POST',
+                body: JSON.stringify({
+                    'description': document.getElementById('description').value
+                }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(function(response){
+                return response.json()
+            })
+            .then(function(jsonResponse){
+                const liItem = document.createElement('LI')
+                liItem.innerHTML = jsonResponse['description']
+                document.getElementById('todos').appendChild(liItem)
+                document.getElementById('error').className = 'hidden'
+            })
+            .catch(function(error){
+                document.getElementById('error').className = ''
+                console.log('>>> error', error)
+            })
         }
     </script>
 </html>
