@@ -79,6 +79,11 @@ def delete_todo(todo_id):
         db.session.close()
     return redirect(url_for('index'))
 
+@app.route('/lists/<list_id>')
+def get_todo_list(list_id):
+    data = Todo.query.filter_by(list_id=list_id).order_by('id').all()
+    return render_template('index.html', data=data)
+
 @app.route('/')
 def index():
-    return render_template('index.html', data=Todo.query.order_by('id').all())
+    return redirect(url_for('get_todo_list',list_id=1))
