@@ -81,8 +81,10 @@ def delete_todo(todo_id):
 
 @app.route('/lists/<list_id>')
 def get_todo_list(list_id):
-    data = Todo.query.filter_by(list_id=list_id).order_by('id').all()
-    return render_template('index.html', data=data)
+    todos = Todo.query.filter_by(list_id=list_id).order_by('id').all()
+    lists = TodoList.query.all()
+    active_list = TodoList.query.get(list_id)
+    return render_template('index.html', todos=todos, lists=lists, active_list=active_list)
 
 @app.route('/')
 def index():
